@@ -28,11 +28,10 @@ def process_homicides_facts():
 
 def process_homicides_victims():
     df = pd.read_excel(FILEPATH + "homicides.xlsx", sheet_name="VICTIMAS")
-    df.drop(columns=["ID_hecho", "AAAA", "MM", "DD", "FECHA_FALLECIMIENTO"], inplace=True)
+    df.drop(columns=["ID_hecho", "AAAA", "MM", "DD", "SEXO", "FECHA_FALLECIMIENTO"], inplace=True)
     df.rename(columns={"FECHA": "victim_date",
                        "ROL": "role",
                        "VICTIMA": "victim",
-                       "SEXO": "sex",
                        "EDAD": "age"},
                        inplace=True)
     create_csv("homicides_victims.csv", df)
@@ -47,7 +46,7 @@ def process_injuries_facts():
                        "fecha": "fact_date",
                        "hora": "fact_time",
                        "tipo_calle": "street_type",
-                       "otra_direccion": "alt dir",
+                       "otra_direccion": "alt_dir",
                        "calle": "street_name",
                        "cruce": "cross_name",
                        "victima": "victim",
@@ -63,20 +62,36 @@ def process_injuries_facts():
 
 def process_injuries_victims():
     df = pd.read_excel(FILEPATH + "injuries.xlsx", sheet_name="VICTIMAS")
-    df.drop(columns=["ID hecho", "AAA", "MM", "DD"], inplace=True)
-    df.rename(columns={"FECHA": "victim_date",
+    df.drop(columns=["ID hecho", "AAA", "MM", "DD", "SEXO"], inplace=True)
+    df.rename(columns={"FECHA ": "victim_date",
                        "VEHICULO_VICTIMA": "vehicle",
-                       "SEXO": "sex",
                        "EDAD_VICTIMA": "age",
                        "GRAVEDAD": "severity"},
                        inplace=True)
     create_csv("injuries_victims.csv", df)
 
+def process_population():
+    df = pd.read_excel(FILEPATH + "population.xlsx", sheet_name="2021",
+                       skiprows=1, skipfooter=3, usecols=(0, 1))
+    df.drop(index=0, inplace=True)
+    df.rename(columns={"Comuna": "comuna",
+                       "Población": "pop_2021"},
+                       inplace=True)
+    for i in range(2020, 2015, -1):
+        temp = pd.read_excel(FILEPATH + "population.xlsx", sheet_name=str(i),
+                           skiprows=1, skipfooter=3, usecols=(0,1))
+        temp.drop(index=0, inplace=True)
+        temp.drop(columns=["Comuna"], inplace=True)
+        df["pop_" + str(i)] = temp
+    df.loc[df['comuna'] == "Total", "comuna"] = 0
+    df.to_csv("Project\data\\final\\population.csv", index=False)
+
 
 if TEST:
-    process_homicides_facts()
-    process_homicides_victims()
-    process_injuries_facts()
-    process_injuries_victims()
+    #process_homicides_facts()
+    #process_homicides_victims()
+    #process_injuries_facts()
+    #process_injuries_victims()
+    process_population()
 
 
