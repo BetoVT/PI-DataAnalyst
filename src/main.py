@@ -19,6 +19,6 @@ for url, filename, ext in linkList:
     dl.getData(url, filename, ext)
 
 #
-# Processing the main required files
+# Processing the main required files """
 
-pr.process_homicides_facts() """
+pr.process_accidents()

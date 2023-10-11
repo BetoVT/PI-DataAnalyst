@@ -40,5 +40,5 @@ def load_db(mydb):
 
 if TEST:
     mydb = connect_db()
-    create_tables(mydb)
-    load_db(mydb)
+    #create_tables(mydb)
+    #load_db(mydb)
