@@ -31,4 +31,22 @@ def process_local_con():
     df.to_csv("data\\processed\\local_con.csv")
     print(df)
 
-process_local_con()
+def process_internet_provincia():
+    df= pd.read_csv("data\\raw\\internet_provincia.csv",
+                    usecols=['Año', 'Trimestre',
+                             'Provincia', 'Accesos por cada 100 hogares'],
+                    decimal=',')
+    df.to_csv("data\\processed\\internet_provincia.csv")
+    
+
+def process_internet_total():
+    df= pd.read_csv("data\\raw\\internet_total.csv",
+                    usecols=['Año', 'Trimestre',
+                             'Accesos por cada 100 hogares',
+                             'Accesos por cada 100 hab'],
+                    decimal=',')
+    df.to_csv("data\\processed\\internet_total.csv")
+
+#process_local_con()
+process_internet_provincia()
+process_internet_total()
