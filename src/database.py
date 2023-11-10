@@ -2,7 +2,7 @@ import mysql.connector
 import pandas as pd
 
 TEST = True
-FILEPATH = "Project\data\\final\\"
+FILEPATH = "data\\processed\\"
 
 def connect_db():
     mydb = mysql.connector.connect(host="localhost",
@@ -13,30 +13,38 @@ def connect_db():
 
 def create_tables(mydb):
     mycursor = mydb.cursor()
-    mycursor.execute("DROP TABLE IF EXISTS homicides_facts")
-    command = ("CREATE TABLE homicides_facts (" +
+    mycursor.execute("DROP TABLE IF EXISTS internet_total")
+    command = ("CREATE TABLE internet_total (" +
                "`id` INT NOT NULL AUTO_INCREMENT," +
-               "`victim_amount` INT NULL," +
-               "`fact_date` DATE NULL," +
-               "`fact_time` TIME NULL," +
-               "`street_type` VARCHAR(10) NULL," +
-               "`street_name` VARCHAR(255) NULL," +
-               "`cross_name` VARCHAR(255) NULL," +
-               "`comuna` INT NULL," + 
-               "`victim` VARCHAR(15) NULL," + 
-               "`accused` VARCHAR(15) NULL," +
+               "`year` INT NULL," +
+               "`trimester` INT NULL," + 
+               "`access_homes` FLOAT NULL," + 
+               "`access_person` FLOAT NULL," +
+               "PRIMARY KEY (`id`));")
+    mycursor.execute(command)
+    mycursor.execute("DROP TABLE IF EXISTS internet_provincia")
+    command = ("CREATE TABLE internet_provincia (" +
+               "`id` INT NOT NULL AUTO_INCREMENT," +
+               "`year` INT NULL," +
+               "`trimester` INT NULL," + 
+               "`provincia` VARCHAR(25) NULL," + 
+               "`access_homes` FLOAT NULL," +
                "PRIMARY KEY (`id`));")
     mycursor.execute(command)
     mydb.commit()
 
 def load_db(mydb):
     mycursor = mydb.cursor()
-    command = ("INSERT INTO homicides_facts (victim_amount, fact_date, fact_time, " +
-               "street_type, street_name, cross_name, comuna, victim, accused)" +
-               "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)")
-    df = pd.read_csv(FILEPATH + "homicides_facts_clean.csv")
+    command = ("INSERT INTO internet_total (year, trimester, access_homes, " +
+               "access_person) VALUES (%s, %s, %s, %s)")
+    df = pd.read_csv(FILEPATH + "internet_total.csv",
+                     usecols=['Año', 'Trimestre',
+                              'Accesos por cada 100 hogares',
+                              'Accesos por cada 100 hab'])
     mycursor.executemany(command, df.values.tolist())
     mydb.commit()
 
 if TEST:
     mydb = connect_db()
+    create_tables(mydb)
+    load_db(mydb)
